@@ -35,6 +35,6 @@ exports.updateDoctorInfo = asyncHandler(async (req, res) => {
 
 exports.getDoctorSchedule = asyncHandler(async (req, res) => {
     const { doctorId } = req.query
-    const result = await Schedule.find({ doctorId: doctorId })
+    const result = await Schedule.find()
     res.json({ message: "get schedule data", result })
 })

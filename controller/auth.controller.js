@@ -143,6 +143,8 @@ exports.registerPatient = asyncHandler(async (req, res) => {
 exports.loginPatient = asyncHandler(async (req, res) => {
     const { userName, password } = req.body
     const result = await Patient.findOne({ $or: [{ email: userName }, { mobile: userName }] })
+    console.log(result);
+
     if (!result) {
         return res.status(400).json({ message: "invalid credentials" })
     }

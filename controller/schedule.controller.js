@@ -20,7 +20,7 @@ exports.addDoctorSchedule = asyncHandler(async (req, res) => {
 });
 
 exports.updateDoctorSchedule = asyncHandler(async (req, res) => {
-    console.log(req.body);
+    // console.log(req.body);
     await Schedule.findByIdAndUpdate(
         req.params._id,
         { ...req.body },
