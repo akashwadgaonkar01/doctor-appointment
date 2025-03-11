@@ -13,7 +13,6 @@ router
 
     .post("/register-patient", registerPatient)
     .post("/login-patient", loginPatient)
-    .post("/verify-patient-otp", verifyPatientOTP)
     .post("/logout-patient", logoutPatient)
 
 module.exports = router

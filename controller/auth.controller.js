@@ -129,69 +129,54 @@ exports.logoutDoctor = asyncHandler(async (req, res) => {
 
 
 exports.registerPatient = asyncHandler(async (req, res) => {
-    const { email, name, mobile } = req.body
-    const result = await Patient.findOne({
-        $or: [
-            { mobile },
-            { email }
-        ]
-    })
+    const { name, email, mobile, password } = req.body
+    const result = await Patient.findOne({ $or: [{ mobile }, { email }] })
     if (result) {
-        return res.status(409).json({ message: "email or mobile already registered" })
+        return res.status(409).json({ message: "email/mobile already registered" })
     }
-    await Patient.create(req.body)
-    res.json({ message: "User register success" })
 
+    const hash = await bcrypt.hash(password, 10)
+    await Patient.create({ ...req.body, password: hash })
+    res.json({ message: "Patient register success" })
 })
 
 exports.loginPatient = asyncHandler(async (req, res) => {
-    const { userName } = req.body
-
+    const { userName, password } = req.body
     const result = await Patient.findOne({ $or: [{ email: userName }, { mobile: userName }] })
     if (!result) {
         return res.status(400).json({ message: "invalid credentials" })
     }
-    const otp = generateOTP()
-    await Patient.findByIdAndUpdate(result._id, { otp, otpSendOn: Date.now() })
-    res.json({ message: "otp send" })
-})
 
-exports.verifyPatientOTP = asyncHandler(async (req, res) => {
-    const { otp, userName } = req.body
-    const result = await Patient.findOne({ $or: [{ email: userName }, { mobile: userName }] })
-    if (!result) {
-        return res.status(401).json({ message: "invalid credentials" })
-    }
-    if (result.otp !== otp) {
-        return res.status(401).json({ message: "invalid otp" })
-    }
-    if (differenceInSeconds(Date.now(), result.otpSendOn) > process.env.OTP_EXPIRE) {
-        await Patient.findByIdAndUpdate(result._id, { otp: null })
-        return res.status(401).json({ message: "otp expire" })
+    const isVerify = await bcrypt.compare(password, result.password)
+    if (!isVerify) {
+        return res.status(401).json({ message: "invalid credentials password" })
     }
 
-    await Patient.findByIdAndUpdate(result._id, { otp: null })
-    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "365d" })
+    if (!result.isActive) {
+        return res.status(401).json({ message: "account blocked by admin" })
+    }
 
-    res.cookie("H-patient", token, {
-        maxAge: 1000 * 60 * 60 * 24 * 365,
+    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
+
+    res.cookie("hos-patient", token, {
+        maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production"
     })
 
     res.json({
-        message: "login success",
-        result: {
+        message: "patient login success", result: {
+            _id: result._id,
             name: result.name,
-            mobile: result.mobile,
             email: result.email,
-            userId: result._id,
-            infoComplete: result.infoComplete
+            doctorId: result._id,
+            infoComplete: result.infoComplete,
         }
     })
+
 })
 
 exports.logoutPatient = asyncHandler(async (req, res) => {
-    res.clearCookie("H-patient")
+    res.clearCookie("hos-patient")
     res.json({ message: "logout user success" })
 })
