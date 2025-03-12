@@ -171,6 +171,7 @@ exports.loginPatient = asyncHandler(async (req, res) => {
             _id: result._id,
             name: result.name,
             email: result.email,
+            password: result.password,
             doctorId: result._id,
             infoComplete: result.infoComplete,
         }
@@ -180,5 +181,5 @@ exports.loginPatient = asyncHandler(async (req, res) => {
 
 exports.logoutPatient = asyncHandler(async (req, res) => {
     res.clearCookie("hos-patient")
-    res.json({ message: "logout user success" })
+    res.json({ message: "patient logout success" })
 })
