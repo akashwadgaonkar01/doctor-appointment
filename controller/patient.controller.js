@@ -7,7 +7,7 @@ exports.getPatientDoctors = asyncHandler(async (req, res) => {
   const doctorIds = doctors.map((doc) => doc._id);
 
   const schedules = await Schedule.find({ doctorId: { $in: doctorIds } }).select(
-    "doctorId day date startTime endTime"
+    "doctorId date startTime endTime"
   );
 
   const result = doctors.map((doctor) => ({
@@ -26,7 +26,7 @@ exports.getSchedule = asyncHandler(async (req, res) => {
 
   const result = await Schedule
     .find({ doctorId: { $in: doctorIds } })
-    .select("doctorId day date startTime endTime");
+    .select("doctorId date startTime endTime");
 
   // const result = doctors.map((doctor) => ({
   //   ...doctor._doc,

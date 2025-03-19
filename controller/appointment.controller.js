@@ -6,7 +6,6 @@ exports.bookAppointment = asyncHandler(async (req, res) => {
     await Appointment.create({
         patientId: req.loggedInPatient,
         doctorId: req.body.doctorId,
-        day: req.body.day,
         date: req.body.date,
         timeSlot: req.body.timeSlot,
         reason: req.body.reason,
