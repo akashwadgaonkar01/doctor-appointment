@@ -1,25 +1,8 @@
 const asyncHandler = require("express-async-handler")
 const bcrypt = require("bcryptjs");
-
 const Doctor = require("../models/Doctor")
 const Patient = require("../models/Patient")
 const { sendEmail } = require("../utils/email")
-
-exports.registerDoctor = asyncHandler(async (req, res) => {
-    const { email, mobile } = req.body
-    const result = await Doctor.findOne({
-        $or: [
-            { mobile },
-            { email }
-        ]
-    })
-    if (result) {
-        return res.status(409).json({ message: "email or mobile already registered" })
-    }
-    await Doctor.create(req.body)
-    res.json({ message: "doctor register success" })
-
-})
 
 exports.registerDoctor = asyncHandler(async (req, res) => {
     const { name, email, mobile } = req.body
@@ -32,7 +15,7 @@ exports.registerDoctor = asyncHandler(async (req, res) => {
     if (result) {
         return res.status(409).json({ message: "email/mobile already registered" })
     }
-    const password = "doc" + name.slice(0, 2)
+    const password = "dr" + name.slice(0, 2)
     const hash = await bcrypt.hash(password, 10)
     await Doctor.create({ ...req.body, password: hash })
     await sendEmail({
@@ -42,6 +25,7 @@ exports.registerDoctor = asyncHandler(async (req, res) => {
     })
     res.json({ message: "Doctor register success" })
 })
+
 exports.getAdminDoctor = asyncHandler(async (req, res) => {
     const result = await Doctor.find()
     res.json({ message: "doctor fetch success", result })

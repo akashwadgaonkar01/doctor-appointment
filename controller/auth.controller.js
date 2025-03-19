@@ -43,7 +43,7 @@ exports.loginAdmin = asyncHandler(async (req, res) => {
         subject: "verify otp to login",
         to: result.email
     })
-    res.json({ message: "otp send" })
+    res.json({ message: "otp send to your email" })
 })
 
 exports.verifyAdminOTP = asyncHandler(async (req, res) => {
@@ -62,10 +62,10 @@ exports.verifyAdminOTP = asyncHandler(async (req, res) => {
     }
 
     await Admin.findByIdAndUpdate(result._id, { otp: null })
-    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
+    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "30d" })
 
     res.cookie("hos-admin", token, {
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production"
     })
@@ -101,10 +101,10 @@ exports.loginDoctor = asyncHandler(async (req, res) => {
         return res.status(401).json({ message: "account blocked by admin" })
     }
 
-    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
+    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "30d" })
 
     res.cookie("hos-doctor", token, {
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production"
     })
@@ -158,10 +158,10 @@ exports.loginPatient = asyncHandler(async (req, res) => {
         return res.status(401).json({ message: "account blocked by admin" })
     }
 
-    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "1d" })
+    const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: "30d" })
 
     res.cookie("hos-patient", token, {
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
         secure: process.env.NODE_ENV === "production"
     })
@@ -176,7 +176,6 @@ exports.loginPatient = asyncHandler(async (req, res) => {
             infoComplete: result.infoComplete,
         }
     })
-
 })
 
 exports.logoutPatient = asyncHandler(async (req, res) => {

@@ -3,8 +3,7 @@ const { updateDoctorInfo, getDoctorSchedule } = require("../controller/doctor.co
 const router = require("express").Router()
 
 router
-    .post("/doctor-info-update",updateDoctorInfo)
-    .get("/get-doctor-schedule",getDoctorSchedule)
-    
-    
+    .post("/doctor-info-update", updateDoctorInfo)
+    .get("/get-doctor-schedule", getDoctorSchedule)
+
 module.exports = router;

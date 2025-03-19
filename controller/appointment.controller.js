@@ -18,7 +18,7 @@ exports.getPatientAppointment = asyncHandler(async (req, res) => {
     const result = await Appointment
         .find({
             patientId: req.loggedInPatient,
-            status: { $in: ["pending", "accept", "reject"] }
+            status: { $in: ["pending", "accepted", "rejected"] }
         })
         .populate({
             path: "doctorId",
@@ -56,9 +56,7 @@ exports.getAdminPatientAppointment = asyncHandler(async (req, res) => {
 
 exports.getAdminPatientCompletedAppointment = asyncHandler(async (req, res) => {
     const result = await Appointment
-        .find({
-            status: "completed"
-        })
+        .find({ status: "completed" })
         .populate({
             path: "doctorId",
             select: "name email mobile address"
@@ -107,7 +105,7 @@ exports.getDoctorPatientRejectAppointment = asyncHandler(async (req, res) => {
     const result = await Appointment
         .find({
             doctorId: req.loggedInDoctor,
-            status: "reject"
+            status: "rejected"
         })
         .populate({
             path: "patientId",
@@ -133,7 +131,7 @@ exports.getDoctorPatientAcceptAppointment = asyncHandler(async (req, res) => {
     const result = await Appointment
         .find({
             doctorId: req.loggedInDoctor,
-            status: "accept"
+            status: "accepted"
         })
         .populate({
             path: "patientId",
