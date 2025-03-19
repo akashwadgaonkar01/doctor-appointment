@@ -19,3 +19,21 @@ exports.getPatientDoctors = asyncHandler(async (req, res) => {
 
   res.json({ message: "Doctor fetch success", result });
 });
+
+exports.getSchedule = asyncHandler(async (req, res) => {
+  const doctors = await Doctor.find({ isActive: true });
+  const doctorIds = doctors.map((doc) => doc._id);
+
+  const result = await Schedule
+    .find({ doctorId: { $in: doctorIds } })
+    .select("doctorId day date startTime endTime");
+
+  // const result = doctors.map((doctor) => ({
+  //   ...doctor._doc,
+  //   schedule: schedules.filter((schedule) =>
+  //     schedule.doctorId.equals(doctor._id)
+  //   ),
+  // }));
+
+  res.json({ message: "schedule fetch success", result });
+});
